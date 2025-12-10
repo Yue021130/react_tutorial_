@@ -1,18 +1,24 @@
-import { useState, useEffect } from 'react';
+import {useEffect, useState} from 'react';
 
 // ============================================
 // 01-hello-react: 第一个 React 应用
-// 学习目标：
-//   1. 理解 JSX 语法
-//   2. 掌握函数组件基础
-//   3. 了解 React 18 createRoot API
-//   4. 体验 Dark/Light 主题切换
-// 预计学习时间：30-45 分钟
 // ============================================
 
 function App() {
   // 主题状态：light | dark
   const [theme, setTheme] = useState('light');
+
+  /*
+       |      部分                               | 含义                                                                        |
+      | ------------------------------------    | ------------------------------------------------------------------------    |
+      | `useEffect(..., [theme])`               | 这是一个 React Hook，**依赖项数组**是 `[theme]`，表示只在 `theme` 变化时执行      |
+      | `document.documentElement`              | 指向 DOM 中的 `<html>` 根元素                                                 |
+      | `.setAttribute('data-theme', theme)`    | 给 `<html>` 添加/更新一个属性，比如 `data-theme="dark"` 或 `data-theme="light"` |
+
+    实际效果：
+      当 theme 从 "light" 变成 "dark" 时，DOM 会变成： <html data-theme="dark">
+
+  * */
 
   // 切换主题时同步到 document
   useEffect(() => {
@@ -82,7 +88,7 @@ npm install && npm run dev`}
       <section className="card" style={{ marginTop: '2rem' }}>
         <h2>📋 JSX 必知规则</h2>
         <ul style={{ paddingLeft: '1.5rem', marginTop: '1rem', color: 'var(--text-secondary)' }}>
-          <li>必须有一个根元素包裹（或使用 Fragment <>{...}</>）</li>
+          <li>必须有一个根元素包裹（或使用 Fragment <>{}</>）</li>
           <li>标签必须闭合：{`<img />`} 或 {`<br />`}</li>
           <li>class 改为 className，for 改为 htmlFor</li>
           <li>内联样式使用对象：style={'{{'} color: 'red' {'}}'}</li>
@@ -108,11 +114,6 @@ npm install && npm run dev`}
           本章我们搭建了 React 开发环境，学习了 JSX 语法和组件的基本概念。
           下一章将深入探索组件的 Props 和组合模式。
         </p>
-        <div style={{ marginTop: '1rem' }}>
-          <a href="../02-components" className="btn">
-            下一章：组件系统 →
-          </a>
-        </div>
       </footer>
     </div>
   );
