@@ -1,13 +1,7 @@
-import { useState, useEffect } from 'react';
+import {useEffect, useState} from 'react';
 
 // ============================================
 // 02-components: 组件系统深度探索
-// 学习目标：
-//   1. Props 传递与解构
-//   2. 条件渲染的多种方式
-//   3. 列表渲染与 key 的重要性
-//   4. 组件组合模式
-// 预计学习时间：45-60 分钟
 // ============================================
 
 const USERS = [
@@ -24,8 +18,10 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+  }, [theme]);  // theme 变化时渲染
 
+
+  // 保留status是active 和 role是admin 的
   const filteredUsers = USERS.filter((u) => {
     if (filter === 'active') return u.status === 'active';
     if (filter === 'admin') return u.role === 'admin';
@@ -52,6 +48,7 @@ export default function App() {
       {/* 筛选 + 列表渲染 */}
       <section className="card">
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+
           {['all', 'active', 'admin'].map((f) => (
             <button
               key={f}
@@ -62,7 +59,82 @@ export default function App() {
               }}
               onClick={() => setFilter(f)}
             >
+
+              {/*
+                1. 当前写法：箭头函数返回一个新函数
+            onClick={() => setFilter(f)}
+            | 不会无限渲染。
+            | 每次渲染虽然会创建一个新的箭头函数，但它不会立即执行，只是作为回调存起来，等用户点击时才触发。
+
+                2. ❌ 危险写法：立即执行（带括号）
+            onClick={setFilter(f)}   // 注意这里有括号！
+            | 会导致无限渲染。
+            | 渲染时直接执行了 setFilter(f) → 状态变了 → 组件重新渲染 → 又执行 setFilter(f) → 无限循环。
+             */}
+
+
+              {/*
+              3. ⚠️ 传函数引用本身（不带参数时可用）
+              onClick={setFilter}   // 没有括号，也没有箭头
+
+          不会无限渲染，但会把点击事件对象 e 当作参数传给 setFilter：
+          setFilter(合成事件对象)  // 不是 'all'/'active'/'admin'，逻辑会崩    ( 上层会传入一个入参：点击事件对象 e
+
+              */}
+
+              {/*
+              Q:  为什么会无限渲染？？？setFilter的本质是什么？？
+              A： 因为 setFilter 的本质是 React 的"状态触发器"——你调用它一次，React 就会安排一次组件重新渲染。
+
+             ===> setFilter 的本质
+            它是 useState 返回的 dispatch 函数（调度函数），内部逻辑大概是
+            function setFilter(newValue) {
+            // 1. 把新值存进 React 内部的状态树
+            state = newValue;
+            // 2. 标记这个组件"脏了"，需要重新渲染
+            scheduleReRender(Component);
+
+           核心特性：调用它 → 组件重新执行（re-render）
+           ----------------------------------------------------------------------
+
+            // ❌ 错误：渲染时立即执行
+            React.createElement('button', {
+              onClick: setFilter(f)   // 渲染到这里，setFilter 立即执行
+            });
+
+            // ✅ 正确：渲染时只创建函数，点击时才执行
+            React.createElement('button', {
+              onClick: () => setFilter(f)   // 渲染时只创建函数，不执行
+            });
+
+              核心区别：
+                  setFilter(f) → 表达式，求值结果就是调用函数的返回值
+                  () => setFilter(f) → 函数对象，求值结果是一个"待执行的函数"
+
+              一句话:
+                React.createElement 的第二个参数（props）  在渲染阶段就会被求值  。
+                如果 onClick 的值是 setFilter(f)，那渲染时就会触发状态更新；
+                如果是 () => setFilter(f)，那渲染时只是创建了一个函数，安全过关。
+
+
+
+
+              */}
+
+
+              {/*
+              它的工作流程分为三个阶段
+1️⃣ 触发（Trigger）
+调用  setState()  或类似的状态更新函数，告知 React："数据变了，需要刷新界面。"
+2️⃣ 渲染（Render）— 即你说的"组件重新执行"
+React 重新调用你的组件函数，生成一份新的虚拟 DOM 树。这一步只是纯计算——在内存里对比新旧两棵树的差异，不碰真实 DOM 。
+3️⃣ 提交（Commit）
+React 把上一步算出的最小变更集合，应用到真实的浏览器 DOM 上。只有这一步用户才能在屏幕上看到变化。
+              */}
+
+
               {f === 'all' ? '全部' : f === 'active' ? '仅在线' : '仅管理员'}
+
             </button>
           ))}
         </div>
@@ -81,14 +153,21 @@ export default function App() {
       {/* 组件组合 */}
       <section className="card">
         <h2>🧩 组件组合</h2>
+
+        {/* 传递组件 或者 HTML元素 ， 类似于插槽。 */}
+
         <Card>
+
           <CardHeader title="可复用卡片" subtitle="通过 children 实现灵活内容" />
+
           <CardBody>
             <p>这是通过 <code>children</code> 传递的内容。父组件不需要知道子组件内部实现。</p>
           </CardBody>
+
           <CardFooter>
             <button className="btn">确认</button>
           </CardFooter>
+
         </Card>
       </section>
 
@@ -99,9 +178,6 @@ export default function App() {
           掌握了 Props 单向数据流、条件渲染的多种写法、列表渲染的 key 原则，
           以及通过 children 实现组件组合。
         </p>
-        <a href="../03-state-events" className="btn" style={{ marginTop: '1rem' }}>
-          下一章：State 与事件 →
-        </a>
       </footer>
     </div>
   );
@@ -111,7 +187,7 @@ export default function App() {
 // 条件渲染演示组件
 // ============================================
 function ConditionDemo() {
-  const [mode, setMode] = useState('ternary');
+  const [mode, setMode] = useState('ternary');   // early | ternary
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const renderContent = () => {
@@ -189,8 +265,17 @@ function UserCard({ user }) {
 // ============================================
 // 组合模式组件
 // ============================================
-function Card({ children }) {
-  return <div className="card">{children}</div>;
+
+/*  以下两种写法都可以！
+  前者加了个大括号，相当于自动解包。
+*/
+
+// function Card({ children }) {
+//   return <div className="card">{children}</div>;
+// }
+
+function Card(prop) {
+  return <div className="card">{prop.children}</div>;
 }
 
 function CardHeader({ title, subtitle }) {
