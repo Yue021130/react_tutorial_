@@ -150,10 +150,14 @@ function ConceptCard({ title, desc, code }) {
 // ============================================
 function CheckList({ items }) {
   const [checked, setChecked] = useState(new Array(items.length).fill(false));
-
+  /*
+  💫💫 数组不可变性
+  [...checked] 再改索引是正确做法。
+  直接 checked[index] = !checked[index]; setChecked(checked) 是经典错误，引用没变 React 检测不到!]！
+  */
   const toggle = (index) => {
     const next = [...checked];
-    next[index] = !next[index];
+    next[index] = !next[index];   // 反转原值
     setChecked(next);
   };
 
