@@ -2,12 +2,6 @@ import { useState, useEffect } from 'react';
 
 // ============================================
 // 03-state-events: State 与事件处理
-// 学习目标：
-//   1. useState 的基本用法与注意事项
-//   2. 事件绑定与事件对象
-//   3. 受控组件 vs 非受控组件
-//   4. 表单处理（文本、选择、复选）
-// 预计学习时间：60 分钟
 // ============================================
 
 export default function App() {
@@ -47,7 +41,7 @@ export default function App() {
       </section>
 
       <footer className="card" style={{ textAlign: 'center' }}>
-        <a href="../04-lifecycle" className="btn">下一章：生命周期 →</a>
+       <h1>情爱里，无智者</h1>
       </footer>
     </div>
   );
