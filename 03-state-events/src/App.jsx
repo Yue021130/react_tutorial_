@@ -28,6 +28,12 @@ export default function App() {
         <CounterDemo />
       </section>
 
+      {/* 闭包陷阱：函数式更新对比 */}
+      <section className="card">
+        <h2>💡 闭包陷阱对比</h2>
+        <ClosureTrapDemo />
+      </section>
+
       {/* 事件处理 */}
       <section className="card">
         <h2>🖱️ 事件处理</h2>
@@ -41,7 +47,7 @@ export default function App() {
       </section>
 
       <footer className="card" style={{ textAlign: 'center' }}>
-       <h1>情爱里，无智者</h1>
+        <h1>情爱里，无智者</h1>
       </footer>
     </div>
   );
@@ -55,6 +61,11 @@ function CounterDemo() {
 
   // ⚠️ 错误示例：直接修改 state
   // count = count + 1; // ❌ 不要这样做！
+
+  /*
+  count 是 const 常量（const [count, ...] = useState(...)），直接赋值会报错；
+   即使不是 const，这样改 React 也检测不到变化，不会触发重新渲染。必须通过 setCount 通知 React。
+   */
 
   // ✅ 正确：使用 setter 函数
   const increment = () => setCount(c => c + 1);
@@ -81,6 +92,115 @@ function CounterDemo() {
 }
 
 // ============================================
+// ClosureTrapDemo: 闭包陷阱 vs 函数式更新
+// ============================================
+function ClosureTrapDemo() {
+  const [countA, setCountA] = useState(0);
+  const [countB, setCountB] = useState(0);
+
+  // ❌ 错误：依赖当前 render 的 countA 快照，三次更新基于同一个旧值
+  const badAddThree = () => {
+    setCountA(countA + 1);
+    setCountA(countA + 1);
+    setCountA(countA + 1);
+  };
+
+  /*
+
+Q:
+  我在想，本质是不是，setCountA/B已经内部关联了对应的countA/B，所以传入一个countA实参是没有意义的
+A:
+  `setCountA` 确实在 React 内部关联了特定的 state 存储位置（fiber 节点上的 hook 链表），但问题不在这里。
+核心在于：React 的更新是"异步批处理"的，直接传值会被"快照"困住，而函数会被"排队"执行。
+
+本质：更新队列的行为差异
+
+
+       直接传值：三次都是同一个旧快照
+    setCountA(countA + 1);  // countA 此时是 0
+    setCountA(countA + 1);  // countA 此时还是 0（同一渲染闭包）
+    setCountA(countA + 1);  // countA 此时还是 0
+
+React 看到的三条指令：
+队列: [ set 1, set 1, set 1 ]
+因为 `countA + 1` 在传入时就已经求值完毕(!!💫关键!!)，三次都是 `1`。React 批量处理完后，最终 state 就是 1。
+
+
+
+      函数式更新：每次基于最新 pending state
+  setCountB(c => c + 1);
+  setCountB(c => c + 1);
+  setCountB(c => c + 1);
+
+React 看到的三条指令：
+队列: [ f1, f2, f3 ]
+处理时依次执行：
+  `f1(0)` → 返回 1
+  `f2(1)` → 返回 2
+  `f3(2)` → 返回 3
+最终 state 是 3。
+
+
+
+## 关于你的猜测
+
+你说"传入 `countA` 实参没有意义"——不完全对。
+
+它有意义，但意义是"给 React 下达一个绝对指令：把这个 state 设成这个具体数值"。
+React 不会拒绝这个指令，它只会忠实地执行三次"设为 1"。
+
+而 `c => c + 1` 的意义是"给 React 一个计算规则，让它在真正要算的时候，拿最新的值来跑"。
+
+
+
+## 一句话总结
+> 直接传值是"提前算好答案交上去"（三次交了同一个答案）；
+> 函数式更新是"交一个公式上去，React 按最新数据现算"（每次用的都是最新草稿）。
+
+*/
+
+
+
+
+  // ✅ 正确：函数式更新，基于最新 state 累加
+  const goodAddThree = () => {
+    setCountB(c => c + 1);
+    setCountB(c => c + 1);
+    setCountB(c => c + 1);
+  };
+
+  return (
+    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div className="card" style={{ flex: 1, minWidth: '220px', border: '2px solid var(--danger)' }}>
+        <h3>❌ 闭包陷阱</h3>
+        <p style={{ fontSize: '1.75rem', textAlign: 'center', fontWeight: 'bold' }}>{countA}</p>
+        <div style={{ textAlign: 'center' }}>
+          <button className="btn" onClick={badAddThree} style={{ background: 'var(--danger)' }}>
+            +3（实际 +1）
+          </button>
+        </div>
+        <p style={{ color: 'var(--muted)', fontSize: '0.8rem', marginTop: '0.75rem' }}>
+          三次 setCountA(countA + 1) 引用的是同一次 render 中的 countA，结果被合并。
+        </p>
+      </div>
+
+      <div className="card" style={{ flex: 1, minWidth: '220px', border: '2px solid var(--success)' }}>
+        <h3>✅ 函数式更新</h3>
+        <p style={{ fontSize: '1.75rem', textAlign: 'center', fontWeight: 'bold' }}>{countB}</p>
+        <div style={{ textAlign: 'center' }}>
+          <button className="btn" onClick={goodAddThree} style={{ background: 'var(--success)' }}>
+            +3（真正 +3）
+          </button>
+        </div>
+        <p style={{ color: 'var(--muted)', fontSize: '0.8rem', marginTop: '0.75rem' }}>
+          三次 setCountB(c =&gt; c + 1) 每次基于最新 state 计算，结果正确累加。
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
 // EventDemo: 事件处理演示
 // ============================================
 function EventDemo() {
@@ -92,6 +212,7 @@ function EventDemo() {
 
   const handleClick = (e) => {
     // e 是 React 合成事件对象
+    // 即：e 是 React 的合成事件对象（SyntheticEvent），不是原生 DOM 事件！
     addLog(`点击按钮！类型: ${e.type}, 目标: ${e.target.tagName}`);
   };
 
@@ -104,7 +225,17 @@ function EventDemo() {
       addLog('按下回车键！');
     }
   };
+  /*
+  按钮的两种绑定方式
 
+<button onClick={handleClick}>点击我</button>
+ ===》   直接传函数引用，无自定义参数。React 会在点击时把事件对象 e 传给它。
+
+<button onClick={() => addLog('箭头函数传参成功！')}>
+  箭头函数传参
+</button>
+ ===》   用箭头函数包裹，因为需要传自定义字符串参数。如果不包，写成 onClick={addLog('...')} 会立即执行导致死循环。
+  */
   return (
     <div>
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
@@ -120,6 +251,7 @@ function EventDemo() {
       />
       <div style={{ marginTop: '0.5rem' }}>
         <strong>最近事件日志：</strong>
+        {/*  && 短路：数组为空时显示"暂无事件"  */}
         {logs.length === 0 && <span style={{ color: 'var(--muted)' }}> 暂无事件</span>}
         <ul style={{ listStyle: 'none', marginTop: '0.5rem', fontSize: '0.9rem' }}>
           {logs.map(log => (
@@ -203,6 +335,9 @@ function FormDemo() {
         />
         订阅邮件通知
       </label>
+      {/*
+      disabled={!isValid} 居然是动态的！！！！ 神奇！
+      */}
 
       <button className="btn" type="submit" disabled={!isValid}>
         提交表单
