@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useEffect, useState} from 'react';
 
 // ============================================
 // 03-state-events: State 与事件处理
@@ -234,7 +234,8 @@ function EventDemo() {
 <button onClick={() => addLog('箭头函数传参成功！')}>
   箭头函数传参
 </button>
- ===》   用箭头函数包裹，因为需要传自定义字符串参数。如果不包，写成 onClick={addLog('...')} 会立即执行导致死循环。
+ ===》   用箭头函数包裹，因为需要传自定义字符串参数。如果不包，写成 onClick={addLog('...')} 会立即执行导致死循环。  => 记住，传函数指针，或者箭头函数。（箭头函数本身也就是一种函数指针。 | 忘记22年的PythonGUI了吗？
+       | 这里死循环是因为， addLog 内部调用了 setLogs，而 setLogs 会触发重新渲染 。
   */
   return (
     <div>
@@ -269,7 +270,8 @@ function EventDemo() {
 // FormDemo: 受控组件表单
 // ============================================
 function FormDemo() {
-  const [form, setForm] = useState({
+  // ① state 是唯一数据源
+  const [form, setForm] = useState({   // 状态设计：一个对象管所有字段
     username: '',
     email: '',
     bio: '',
@@ -279,13 +281,22 @@ function FormDemo() {
   const [submitted, setSubmitted] = useState(false);
 
   // 通用字段更新函数
+  /*
+
+| 部分                   |             作用                                                              |
+| --------------------- | ----------------------------------------------------------------------------  |
+| `...prev`             | 展开旧对象，保留所有未修改的字段                                                   |
+| `[field]: value`      | **计算属性名**：`field` 是变量，比如 `'username'`，最终变成 `{ username: 'Alice' }` |
+| `setSubmitted(false)` | 一旦修改任何字段，就把"已提交成功"提示隐藏，防止用户误以为修改后的数据已经提交            |
+
+  */
   const updateField = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm(prev => ({...prev, [field]: value}));  // 核心写法见分析.md
     setSubmitted(false);
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // 阻止默认表单提交
+    e.preventDefault(); // 阻止默认表单提交  ===> 原生表单提交会刷新页面，e.preventDefault() 拦住它，改成 React 的异步处理逻辑（比如调 API）。
     setSubmitted(true);
     console.log('提交的数据:', form);
   };
@@ -295,9 +306,10 @@ function FormDemo() {
   return (
     <form onSubmit={handleSubmit}>
       <label>用户名 *</label>
+      {/*   每个输入元素都是受控的  */}
       <input
-        value={form.username}
-        onChange={e => updateField('username', e.target.value)}
+        value={form.username}     // ② 用 state 控制显示值
+        onChange={e => updateField('username', e.target.value)}     // ③ 用户输入时更新 state
         placeholder="至少 2 个字符"
       />
 
@@ -337,12 +349,19 @@ function FormDemo() {
       </label>
       {/*
       disabled={!isValid} 居然是动态的！！！！ 神奇！
+
+    disabled 是 HTML 原生属性，但这里绑定了一个布尔表达式。
+  isValid 是实时计算的派生值，每次渲染都会重新判断。用户输入过程中，按钮自动启用/禁用，无需手动操作 DOM。
       */}
 
       <button className="btn" type="submit" disabled={!isValid}>
         提交表单
       </button>
 
+      {/*
+      submitted 为 false 时，整段 JSX 不渲染（false && ... 返回 false，React 忽略）
+提交成功后显示，修改任何字段时 updateField 会把 submitted 重置为 false，提示自动消失
+      */}
       {submitted && (
         <div className="card" style={{ marginTop: '1rem', background: 'var(--success)', color: '#fff' }}>
           ✅ 提交成功！<br />
