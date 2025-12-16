@@ -52,6 +52,26 @@ const [value, setValue] = useState('');
 | `<input type="checkbox">` | `checked` + `onChange` |
 | `<input type="radio">` | `checked` + `onChange` |
 
+
+为什么不同元素处理方式不同？
+表格的核心意思是：不同表单元素读取/写入值的属性名不一样，但受控模式的思路完全相同：
+
+| 元素 | 绑定值的属性 | 事件回调中取值的方式 | 原因 |
+| :--- | :--- | :--- | :--- |
+| `text/textarea/select` | `value` | `e.target.value` | 这些元素的值存在 `value` 属性里 |
+| `checkbox/radio` | `checked` | `e.target.checked` | 勾选状态不在 `value` 里，而在 `checked` 布尔属性里 |
+
+
+| | 受控组件 | 非受控组件 |
+| :--- | :--- | :--- |
+| 数据源 | React state | DOM 自身 |
+| 写法 | `value` + `onChange` | 不传 `value`，用 `ref` 取值 |
+| 实时校验/联动 | ✅ 天然支持 | ❌ 需要手动监听 |
+| 代码量 | 稍多 | 较少 |
+| 推荐程度 | 绝大多数场景首选 | 仅简单表单/第三方库集成 |
+
+
+
 ## 🧠 常见面试题
 
 **Q: 为什么 setState 是异步的？**  
