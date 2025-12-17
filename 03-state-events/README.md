@@ -72,6 +72,28 @@ const [value, setValue] = useState('');
 
 
 
+非受控
+
+~~~jsx
+const inputRef = useRef(null);
+
+// ❌ 没有 value 属性！输入框的值完全由浏览器 DOM 自己管理
+<input ref={inputRef} defaultValue="初始值" />
+
+// 只在提交时才从 DOM 中"取"值
+const handleSubmit = () => {
+console.log(inputRef.current.value); // 👈 手动读 DOM
+};
+~~~
+
+- **混用 `value` 和 `ref`**：如果同时写了 `value={state}` 和 `ref`，它就是受控组件，`ref` 只是多了一个访问通道，并不会变成非受控。
+
+- **用了 `defaultValue` 却期望它随 state 变化**：`defaultValue` **只在首次挂载时生效**，后续 state 变了它不会更新。想要响应式就用受控的 `value`。
+
+- **试图在非受控组件上做实时逻辑**：因为没有 `onChange` 同步 state，你无法在输入过程中做任何 React 层面的响应。
+
+
+
 ## 🧠 常见面试题
 
 **Q: 为什么 setState 是异步的？**  
