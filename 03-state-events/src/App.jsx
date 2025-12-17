@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import GenericFormDemo from './GenericFormDemo.jsx';
 
 // ============================================
 // 03-state-events: State 与事件处理
@@ -44,6 +45,12 @@ export default function App() {
       <section className="card">
         <h2>📝 受控表单</h2>
         <FormDemo />
+      </section>
+
+      {/* 通用表单处理器 */}
+      <section className="card">
+        <h2>🧩 通用表单处理器</h2>
+        <GenericFormDemo />
       </section>
 
       <footer className="card" style={{ textAlign: 'center' }}>
