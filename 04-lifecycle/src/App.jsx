@@ -2,12 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 
 // ============================================
 // 04-lifecycle: 生命周期与 useEffect
-// 学习目标：
-//   1. useEffect 的基本用法
-//   2. 清理副作用（cleanup）
-//   3. 依赖数组深入理解
-//   4. 常见场景：订阅、定时器、网络请求
-// 预计学习时间：60-75 分钟
 // ============================================
 
 export default function App() {
@@ -79,44 +73,86 @@ export default function App() {
           useEffect 是函数组件处理副作用的核心工具。
           理解依赖数组、清理函数和渲染时机是掌握 React 的关键。
         </p>
-        <a href="../05-hooks-deep-dive" className="btn" style={{ marginTop: '1rem' }}>
-          下一章：Hooks 深入 →
-        </a>
+        <hr/>
+        <h1 style={{
+          paddingTop: '20px',
+          fontFamily: '"KaiTi", "STKaiti", "楷体", serif', // 兼容多平台的楷体写法
+          backgroundImage: 'linear-gradient(to right, #000000, #4ecdc4)', // 用背景色代替文字颜色
+          WebkitBackgroundClip: 'text',      // 将背景裁剪为文字形状（WebKit内核必需）
+          backgroundClip: 'text',            // 标准属性
+          color: 'transparent',              // ⚠️ 关键：隐藏原始文字颜色，让渐变透出来
+          fontSize: '2rem',                  // 可选：调整字号以更好展示渐变
+        }}>何当共剪西窗烛，却话巴山夜雨时。</h1>
       </footer>
     </div>
   );
 }
 
 // ============================================
-// Timer: 展示 mount / update / unmount
+// Timer: 展示 mount / update / unmount 三个阶段
+//
+// 父组件通过 onLog prop 传入一个记录日志的函数，
+// Timer 在自身生命周期的不同阶段调用它，方便观察。
 // ============================================
-function Timer({ onLog }) {
+function Timer({onLog}) {
+  // seconds: 当前计时秒数，每秒 +1
+  // setSeconds(s => s + 1) 用函数式更新，避免闭包陷阱
   const [seconds, setSeconds] = useState(0);
-  const intervalRef = useRef(null);
 
+  // intervalRef: 用 useRef 保存 setInterval 返回的计时器 id
+  // useRef 的值在重新渲染时保持不变，且修改它不会触发重新渲染
+  /*
+   Q: 为什么用 useRef 不用普通变量？
+   A: 因为组件每次渲染都会重新执行，普通变量会被重置。useRef 的值在多次渲染之间保持不变，而且修改它不会触发重新渲染。
+  */
+  const intervalRef = useRef(null);   // 第一次渲染创建这个对象，之后这个intervalRef对象不会变。
+  // 即： 下一次渲染，intervalRef 还是同一个对象 。  intervalRef.current 里仍然保存着上一次的 id
+
+  // ① 第一个 useEffect：处理 mount 和 unmount
+  //    空依赖数组 [] 表示：只在组件挂载时执行 setup，卸载时执行 cleanup  ==》 也就是它return的箭头函数
   useEffect(() => {
+    // mount 阶段：组件第一次出现在 DOM 中时执行
     onLog('mount', 'Timer 组件挂载，启动定时器');
 
+    /*
+      setInterval 返回一个数字 ID，用来以后停止这个定时器：
+
+     const id = setInterval(...);
+     // 以后想停掉它：
+     clearInterval(id);
+
+   这里把 ID 存到 intervalRef.current 里，是为了在组件卸载时能找到它并清理。
+
+    */
+
+
+    // 启动定时器，每秒把 seconds 加 1
+    // setInterval 返回一个 id，用 intervalRef.current 存起来
     intervalRef.current = setInterval(() => {
-      setSeconds(s => s + 1);
+      setSeconds(s => s + 1); // 函数式更新：基于最新值 +1   ==》 每次更新，组件自动渲染
     }, 1000);
 
-    // 清理函数：组件卸载时执行
+    // 清理函数（cleanup）：组件卸载前执行
+    // 作用：清除定时器，防止内存泄漏和后台继续计数
     return () => {
       clearInterval(intervalRef.current);
       onLog('unmount', 'Timer 组件卸载，清理定时器');
     };
   }, []); // 空依赖 = 只在 mount/unmount 执行
 
-  // 每次 seconds 更新时记录
+
+  // ② 第二个 useEffect：监听 seconds 变化
+  //    [seconds] 表示：seconds 每次更新都会执行
   useEffect(() => {
     if (seconds > 0) {
+      // update 阶段：state 变化导致重新渲染后执行
       onLog('update', `计时器更新: ${seconds}s`);
     }
   }, [seconds]);
 
   return (
     <div>
+      {/* padStart(2, '0') 让个位数显示成 01, 02 ... */}
       <div className="timer-display">{seconds.toString().padStart(2, '0')}</div>
       <p style={{ textAlign: 'center', color: 'var(--muted)', fontSize: '0.9rem' }}>
         定时器每 1 秒更新一次
@@ -147,7 +183,7 @@ function DataFetchDemo() {
         );
         if (!res.ok) throw new Error('请求失败');
         const json = await res.json();
-        setData(json);
+        setData(json);   // 结果放进data里面，然后渲染更新
       } catch (err) {
         if (err.name !== 'AbortError') setError(err.message);
       } finally {
@@ -155,7 +191,7 @@ function DataFetchDemo() {
       }
     }
 
-    fetchUser();
+    fetchUser();  // ✅ 直接调用，不用 await。 | fetchUser() 调用后返回 Promise，但我们不关心，直接忽略
 
     // 清理：取消未完成的请求
     return () => controller.abort();
@@ -200,11 +236,14 @@ function DependencyTrap() {
   const [wrong, setWrong] = useState(0);
   const [correct, setCorrect] = useState(0);
 
+
+  // 初始化挂载才触发，只触发一次
   // ❌ 错误：遗漏依赖 count
   useEffect(() => {
     setWrong(count * 2);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // count更新就触发
   // ✅ 正确：包含所有依赖
   useEffect(() => {
     setCorrect(count * 2);
