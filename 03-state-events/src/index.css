@@ -1,0 +1,43 @@
+/* 03-state-events */
+:root {
+  --bg: #f5f7fa; --card: #fff; --text: #1f2937;
+  --accent: #6366f1; --accent-light: #818cf8;
+  --muted: #6b7280; --border: #e5e7eb;
+  --success: #10b981; --danger: #ef4444; --warn: #f59e0b;
+}
+[data-theme="dark"] {
+  --bg: #0b0f19; --card: #111827; --text: #f3f4f6;
+  --accent: #818cf8; --accent-light: #a5b4fc;
+  --muted: #9ca3af; --border: #374151;
+  --success: #34d399; --danger: #f87171; --warn: #fbbf24;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg); color: var(--text); transition: 0.3s;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem;
+}
+input, textarea, select {
+  width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--bg); color: var(--text);
+  font-size: 1rem; margin-bottom: 0.75rem;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+.btn {
+  padding: 0.6rem 1.2rem; border: none; border-radius: 8px;
+  background: var(--accent); color: #fff; cursor: pointer; font-weight: 500;
+  transition: 0.2s;
+}
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.counter {
+  display: inline-flex; align-items: center; gap: 1rem;
+  padding: 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border);
+}
+.toggle-theme { position: fixed; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.3rem; }
