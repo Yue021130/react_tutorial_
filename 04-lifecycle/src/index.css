@@ -1,0 +1,29 @@
+/* 04-lifecycle */
+:root {
+  --bg: #f0f4f8; --card: #fff; --text: #1a202c;
+  --accent: #3182ce; --accent-light: #63b3ed;
+  --muted: #718096; --border: #e2e8f0;
+  --success: #38a169; --warn: #d69e2e; --danger: #e53e3e;
+  --phase-mount: #38a169; --phase-update: #3182ce; --phase-unmount: #e53e3e;
+}
+[data-theme="dark"] {
+  --bg: #0d1117; --card: #161b22; --text: #c9d1d9;
+  --accent: #58a6ff; --accent-light: #79c0ff;
+  --muted: #8b949e; --border: #30363d;
+  --success: #3fb950; --warn: #d29922; --danger: #f85149;
+  --phase-mount: #3fb950; --phase-update: #58a6ff; --phase-unmount: #f85149;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; transition: 0.2s; }
+.btn:hover { opacity: 0.9; }
+.phase-label { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; margin-right: 0.5rem; }
+.mount { background: var(--phase-mount); color: #fff; }
+.update { background: var(--phase-update); color: #fff; }
+.unmount { background: var(--phase-unmount); color: #fff; }
+.log-list { list-style: none; font-size: 0.9rem; }
+.log-list li { padding: 0.4rem 0; border-bottom: 1px dashed var(--border); display: flex; align-items: center; }
+.timer-display { font-size: 3rem; font-weight: bold; text-align: center; color: var(--accent); font-variant-numeric: tabular-nums; }
+.toggle-theme { position: fixed; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.3rem; }
