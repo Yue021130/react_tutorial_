@@ -1,7 +1,6 @@
 # 06 Context API
 
-> **本章目标**：掌握 Context API 进行跨层级状态共享。  
-> **预计学习时间**：60 分钟
+> **本章目标**：掌握 Context API 进行跨层级状态共享。
 
 ---
 
@@ -23,6 +22,9 @@ function Toolbar() {
   return <div>{theme}</div>;
 }
 ```
+
+==所有消费 Context 的组件都会重渲染。==
+
 
 ## ⚡ 性能优化
 
