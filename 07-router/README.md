@@ -1,9 +1,6 @@
 # 07 React Router
 
-> **本章目标**：掌握 React Router v7 的路由配置与导航。  
-> **预计学习时间**：75 分钟
-
----
+> **本章目标**：掌握 React Router v7 的路由配置与导航。
 
 ## 🛣️ 核心概念
 
@@ -26,8 +23,6 @@ function App() {
 
 **Q: BrowserRouter 和 HashRouter 的区别？**  
 A: BrowserRouter 使用 HTML5 history API（路径干净），需要服务端配置；HashRouter 使用 URL hash（兼容性更好），不需要服务端配置。
-
----
 
 ## 📝 总结
 
