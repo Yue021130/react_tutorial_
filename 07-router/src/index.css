@@ -1,0 +1,12 @@
+/* 07-router */
+:root { --bg: #f8fafc; --card: #fff; --text: #0f172a; --accent: #0ea5e9; --muted: #64748b; --border: #e2e8f0; }
+[data-theme="dark"] { --bg: #020617; --card: #0f172a; --text: #f1f5f9; --accent: #38bdf8; --muted: #94a3b8; --border: #1e293b; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+nav a { padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; color: var(--text); transition: 0.2s; }
+nav a:hover, nav a.active { background: var(--accent); color: #fff; }
+.toggle-theme { position: fixed; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.3rem; }
