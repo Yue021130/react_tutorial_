@@ -1,4 +1,60 @@
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>08 表单处理 - React 从零到精通</title></head>
-<body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body></html>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
+<div data-myattribute="gwyue"></div>
+<div data-x="021130"></div>
+<div x="我终于丢失了她的消息，我从来没有拥有过她的消息。"></div>
+<div lg="mdRL开会被骂了！草"></div>
+</body>
+<!--
+
+这是 HTML 解析机制的特性：**浏览器对属性非常宽容，你写任何属性它都会保留在 DOM 中**，不管是不是标准的。
+
+但「能看到」和「规范/好用」是两回事：
+
+---
+
+### 为什么 `x="gwyue"` 也能显示？
+
+浏览器解析 HTML 时，遇到 `标签名 属性名="值"` 这种格式，**几乎都会原样保留**。所以开发者工具里当然能看到。
+
+但这属于**非标准属性**，和 `data-x` 有本质区别：
+
+| 特性 | `data-x="gwyue"` ✅ | `x="gwyue"` ❌ |
+|------|---------------------|----------------|
+| **HTML 规范** | HTML5 标准自定义属性 | 非标准，验证会报错 |
+| **JavaScript 读取** | `element.dataset.x` | `element.getAttribute('x')` |
+| **未来兼容性** | 不会与标准属性冲突 | 万一未来 HTML 新增 `x` 属性，会冲突 |
+| **React 传递** | 自动透传到 DOM | 可能被过滤或警告 |
+
+---
+
+### 代码验证
+
+你可以打开控制台验证：
+
+```javascript
+// 对于 <div data-x="gwyue">
+const div1 = document.querySelector('[data-x]');
+console.log(div1.dataset.x);        // ✅ "gwyue"  —— 专用 API，很方便
+
+// 对于 <div x="gwyue">
+const div2 = document.querySelector('[x]');
+console.log(div2.dataset.x);        // ❌ undefined
+console.log(div2.getAttribute('x')); // ⚠️ "gwyue"  —— 能用，但不规范
+```
+
+---
+
+### 总结
+
+- **能看到**：浏览器不阻止你写任何属性，都会解析显示
+- **应该怎么做**：**始终用 `data-` 前缀**。这是 HTML5 专门给自定义属性留的「官方命名空间」，既安全又方便，还能享受 `dataset` API
+
+你图中的 `x="gwyue"` 虽然能用，但属于「野路子」，不推荐。
+
+-->
+</html>
