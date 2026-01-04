@@ -1,0 +1,9 @@
+/* 10-performance */
+:root { --bg: #f0fdf4; --card: #fff; --text: #14532d; --accent: #16a34a; --muted: #65a30d; --border: #bbf7d0; --warn: #ca8a04; }
+[data-theme="dark"] { --bg: #052e16; --card: #064e3b; --text: #dcfce7; --accent: #4ade80; --muted: #a3e635; --border: #166534; --warn: #facc15; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; }
+.toggle-theme { position: fixed; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.3rem; }
