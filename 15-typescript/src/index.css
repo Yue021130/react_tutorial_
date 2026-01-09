@@ -1,0 +1,10 @@
+/* 15-typescript */
+:root { --bg: #eff6ff; --card: #fff; --text: #1e3a5f; --accent: #2563eb; --muted: #64748b; --border: #bfdbfe; }
+[data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #e0f2fe; --accent: #60a5fa; --muted: #94a3b8; --border: #334155; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; }
+.code { background: var(--bg); padding: 1rem; border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre; }
+.toggle-theme { position: fixed; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.3rem; }
