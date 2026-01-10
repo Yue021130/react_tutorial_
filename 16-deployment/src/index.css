@@ -1,0 +1,10 @@
+/* 16-deployment */
+:root { --bg: #fdf2f8; --card: #fff; --text: #831843; --accent: #db2777; --muted: #be185d; --border: #fbcfe8; }
+[data-theme="dark"] { --bg: #2a0a18; --card: #500724; --text: #fce7f3; --accent: #f472b6; --muted: #f9a8d4; --border: #831843; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; }
+.code { background: var(--bg); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre; }
+.toggle-theme { position: fixed; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.3rem; }
